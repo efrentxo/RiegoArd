@@ -43,13 +43,10 @@ void loop()
 {
   // Prepare LCD
   lcd.clear();//Limpiamos la LCD
-  //lcd.print("TEST...");//Escribimos en la primera linea
-  //lcd.setCursor(0, 1); //Saltamos a la segunda linea
   //Show time in lcd
   time_t t = now();
   lcd.setCursor(0, 0); //Saltamos a la tercera
   lcd.print(String(day(t)) + String("/") + String(month(t)) + String("/") + String(year(t)));
-  //lcd.setCursor(0, 3); //Saltamos a la cuarta
   lcd.print("  ");
   if (second(t) < 10)
   {
@@ -71,7 +68,7 @@ void loop()
        
       // Transition
         if (esHoraRiego()) { //comprobamos si es la hora del riego
-          currentState = 2;
+          currentState = 1;
         }  
       break;
     
@@ -94,7 +91,7 @@ void loop()
   if (esHoraRiego()) { //comprobamos si es la hora del riego
     digitalWrite (ledPin, HIGH); // activo el led
     lcd.setCursor(0, 1); //Saltamos a la segunda
-    lcd.print("--> ES HORA DE RIEGO!!");//Escribimos en la primera linea
+    lcd.print("--> REGANDO!!");//Escribimos en la primera linea
     
     myservo.write(180);
   }
@@ -102,7 +99,7 @@ void loop()
     
     digitalWrite (ledPin, LOW); // cierro el led
     lcd.setCursor(0, 1); //Saltamos a la segunda
-    lcd.print("--> No es hora riego");//Escribimos en la primera linea
+    lcd.print("--> esperando");//Escribimos en la primera linea
   
     myservo.write(0);
   }
