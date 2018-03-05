@@ -88,7 +88,7 @@ void loop()
   //Show time in lcd
   time_t t = now();
   lcd.setCursor(0, 2); //Saltamos a la tercera
-  lcd.print(String(day(t)) + String(":") + String(month(t)) + String(":") + String(year(t)));
+  lcd.print(String(day(t)) + String("/") + String(month(t)) + String("/") + String(year(t)));
   lcd.setCursor(0, 3); //Saltamos a la cuarta
   if (second(t) < 10)
   {
