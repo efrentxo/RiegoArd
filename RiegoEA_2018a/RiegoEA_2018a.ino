@@ -20,6 +20,9 @@ const int hora =0;
 #include <LiquidCrystal_I2C.h>
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 
+// State machine
+int currentState = 0;
+ 
 void setup()
 {
   pinMode(ledPin, OUTPUT);   // led indicator
@@ -38,58 +41,16 @@ void setup()
 
 void loop()
 {
+  // Prepare LCD
   lcd.clear();//Limpiamos la LCD
-  lcd.print("TEST...");//Escribimos en la primera linea
-  lcd.setCursor(0, 1); //Saltamos a la segunda linea
-  // Actualiza el estado de la maquina
-
-  //switch (currentState)
-  //{
-  // case NoRiego:
-  /// Codigo No Riego standby
-  //    lcd.print("NO ES HORA DE RIEGO");//Escribimos en la primera linea
-  //      lcd.setCursor(0,2);//Saltamos a la segunda
-
-  // Transitions
-  //    if(esHoraRiego()){ //comprobamos si es la hora del riego
-  //      currentState = RiegoAuto;
-  //     }
-  //break;
-
-  //case RiegoAuto:
-  /// Codigo RIego auto
-  //      lcd.print("ES HORA DE RIEGO");//Escribimos en la primera linea
-  //     lcd.setCursor(0,2);//Saltamos a la segunda
-
-
-  //  break;
-
-  //  case RiegoManual:
-
-
-  // break;
-  // }
-
-
-  if (esHoraRiego()) { //comprobamos si es la hora del riego
-    digitalWrite (ledPin, HIGH); // activo el led
-    lcd.print("--> ES HORA DE RIEGO!!");//Escribimos en la primera linea
-    lcd.setCursor(0, 1); //Saltamos a la segunda
-    myservo.write(180);
-  }
-  else {
-    Serial.println(" --> No es hora riego"); // no es hora de riego: informo por serie
-    digitalWrite (ledPin, LOW); // cierro el led
-    lcd.print("--> No es hora riego");//Escribimos en la primera linea
-  
-    myservo.write(0);
-  }
-
+  //lcd.print("TEST...");//Escribimos en la primera linea
+  //lcd.setCursor(0, 1); //Saltamos a la segunda linea
   //Show time in lcd
   time_t t = now();
-  lcd.setCursor(0, 2); //Saltamos a la tercera
+  lcd.setCursor(0, 0); //Saltamos a la tercera
   lcd.print(String(day(t)) + String("/") + String(month(t)) + String("/") + String(year(t)));
-  lcd.setCursor(0, 3); //Saltamos a la cuarta
+  //lcd.setCursor(0, 3); //Saltamos a la cuarta
+  lcd.print("  ");
   if (second(t) < 10)
   {
     lcd.print(String(hour(t)) + String(":") + String(minute(t)) + String(":0") + String(second(t)));
@@ -99,6 +60,54 @@ void loop()
     lcd.print(String(hour(t)) + String(":") + String(minute(t)) + String(":") + String(second(t)));
   }
   // End Show time in lcd
+
+  
+  // Main state machine
+    switch (currentState) {
+    case 0:
+      //do something when state equals "NoRiego"
+      lcd.setCursor(0, 3); //Saltamos a la segunda linea
+      lcd.print("TEST state --> 1");//Escribimos en la primera linea
+       
+      // Transition
+        if (esHoraRiego()) { //comprobamos si es la hora del riego
+          currentState = 2;
+        }  
+      break;
+    
+    case 1:
+      //do something when state equals "RiegoProg"
+      lcd.setCursor(0, 3); //Saltamos a la segunda linea
+      lcd.print("TEST state --> 2");//Escribimos en la primera linea      
+
+      // Transition
+      
+      break;
+    
+    default:
+      // if nothing else matches, do the default
+      // default is optional
+      lcd.print("State default...");//Escribimos en la primera linea
+      break;
+     }
+
+  if (esHoraRiego()) { //comprobamos si es la hora del riego
+    digitalWrite (ledPin, HIGH); // activo el led
+    lcd.setCursor(0, 1); //Saltamos a la segunda
+    lcd.print("--> ES HORA DE RIEGO!!");//Escribimos en la primera linea
+    
+    myservo.write(180);
+  }
+  else {
+    
+    digitalWrite (ledPin, LOW); // cierro el led
+    lcd.setCursor(0, 1); //Saltamos a la segunda
+    lcd.print("--> No es hora riego");//Escribimos en la primera linea
+  
+    myservo.write(0);
+  }
+
+
 
   
   time = millis();
