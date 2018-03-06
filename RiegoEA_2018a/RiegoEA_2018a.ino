@@ -7,12 +7,13 @@
 Servo myservo;  // create servo object to control the valve
 const int ledPin = 12; // pin for the led indicator
 
+// Parameters:
+const int  TimeWatering = 300; // [sec]
+const int hora = 0;
 //Defino horas de riego Inicio a las 00:01 y termina a las 00:02 (poned las horas a las que hagais las pruebas)
 byte horaInicio = 13, minutoInicio = 11;
 byte horaFin = 13, minutoFin = 12;
 unsigned long time;
-//const int  TimeWatering = 300;
-const int hora =0;
 
 //Pantalla 20x4
 //Librerias necesarias
@@ -22,7 +23,7 @@ LiquidCrystal_I2C lcd(0x27, 20, 4);
 
 // State machine
 int currentState = 0;
- 
+
 void setup()
 {
   pinMode(ledPin, OUTPUT);   // led indicator
@@ -36,6 +37,8 @@ void setup()
   lcd.backlight();
   //Iniciamos la pantalla
   lcd.init();
+
+  time = 0;
 
 }
 
@@ -58,62 +61,57 @@ void loop()
   }
   // End Show time in lcd
 
-  
+
   // Main state machine
-    switch (currentState) {
+  switch (currentState) {
     case 0:
       //do something when state equals "NoRiego"
       lcd.setCursor(0, 3); //Saltamos a la segunda linea
-      lcd.print("TEST state --> 1");//Escribimos en la primera linea
-       
+      lcd.print("TEST state --> 0");//Escribimos en la primera linea
+
+      lcd.setCursor(0, 1); //Saltamos a la segunda
+      lcd.print("--> esperando");//Escribimos en la primera linea
+
+      digitalWrite (ledPin, LOW); // cierro el led
+      myservo.write(0);
+
       // Transition
-        if (esHoraRiego()) { //comprobamos si es la hora del riego
-          currentState = 1;
-        }  
+      if (esHoraRiego()) { //comprobamos si es la hora del riego
+        currentState = 1;
+      }
       break;
-    
+
     case 1:
       //do something when state equals "RiegoProg"
       lcd.setCursor(0, 3); //Saltamos a la segunda linea
-      lcd.print("TEST state --> 2");//Escribimos en la primera linea      
+      lcd.print("TEST state --> 1");//Escribimos en la primera linea
+      lcd.setCursor(0, 1); //Saltamos a la segunda
+      lcd.print("--> REGANDO!!");//Escribimos en la primera linea
 
+      digitalWrite (ledPin, HIGH); // activo el led
+      myservo.write(180);
+
+
+      time = time + 1;
       // Transition
-      
+      if (time > 10) { //comprobamos si es la hora del riego
+        currentState = 0;
+        time = 0;
+      }
+
       break;
-    
+
     default:
       // if nothing else matches, do the default
       // default is optional
       lcd.print("State default...");//Escribimos en la primera linea
       break;
-     }
-
-  if (esHoraRiego()) { //comprobamos si es la hora del riego
-    digitalWrite (ledPin, HIGH); // activo el led
-    lcd.setCursor(0, 1); //Saltamos a la segunda
-    lcd.print("--> REGANDO!!");//Escribimos en la primera linea
-    
-    myservo.write(180);
-  }
-  else {
-    
-    digitalWrite (ledPin, LOW); // cierro el led
-    lcd.setCursor(0, 1); //Saltamos a la segunda
-    lcd.print("--> esperando");//Escribimos en la primera linea
-  
-    myservo.write(0);
   }
 
 
-
-  
-  time = millis();
+  // time_program = millis();
   //prints time since program started
-  Serial.println(time);
-  //    if (int(time) > int(time) + TimeWatering) {
-  //      time = millis
-  //      myservo.write(150);
-  //    }
+ 
   delay(1000); // espero 1s
 }
 
