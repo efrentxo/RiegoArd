@@ -1,9 +1,14 @@
-
 // Auto Riego
 
-#include <Time.h> //usamos la librería Time.h 
-#include <Servo.h> //usamos la librería Servo.h 
+#include <Time.h>   //usamos la librería Time.h 
+#include <Servo.h>  //usamos la librería Servo.h
 
+//Using RTC
+#include <RTClib.h> //usamos la librería RTClib.h for the RTC module 
+RTC_DS3231 rtc;
+String daysOfTheWeek[7] = { "Sunday", "Monday", "Thuesday", "Wednesday", "Thrusday", "Friday", "Saturday" };
+String monthsNames[12] = { "January", "February", "March", "April", "May", "June", "July", "Agost","September","October","November","December" };
+ 
 Servo myservo;  // create servo object to control the valve
 const int ledPin = 12; // pin for the led indicator
 
@@ -38,30 +43,18 @@ void setup()
   //Iniciamos la pantalla
   lcd.init();
 
+  // Update date & time with compiling info
+  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  
   time = 0;
 
 }
 
 void loop()
 {
-  // Prepare LCD
-  lcd.clear();//Limpiamos la LCD
-  //Show time in lcd
-  time_t t = now();
-  lcd.setCursor(0, 0); //Saltamos a la tercera
-  lcd.print(String(day(t)) + String("/") + String(month(t)) + String("/") + String(year(t)));
-  lcd.print("  ");
-  if (second(t) < 10)
-  {
-    lcd.print(String(hour(t)) + String(":") + String(minute(t)) + String(":0") + String(second(t)));
-  }
-  else
-  {
-    lcd.print(String(hour(t)) + String(":") + String(minute(t)) + String(":") + String(second(t)));
-  }
-  // End Show time in lcd
-
-
+  // LCD time & data
+  displayTime();
+  
   // Main state machine
   switch (currentState) {
     case 0:
@@ -91,8 +84,8 @@ void loop()
       digitalWrite (ledPin, HIGH); // activo el led
       myservo.write(180);
 
-
       time = time + 1;
+      
       // Transition
       if (time > 10) { //comprobamos si es la hora del riego
         currentState = 0;
@@ -133,3 +126,25 @@ boolean esHoraRiego() {
     return false; // no estamos en período de riego: devolver “false”
   }
 }
+
+void displayTime()
+{
+  // Prepare LCD
+  lcd.clear();//Limpiamos la LCD
+  //Show time in lcd
+  time_t t = now();
+  lcd.setCursor(0, 0); //Saltamos a la tercera
+  lcd.print(String(day(t)) + String("/") + String(month(t)) + String("/") + String(year(t)));
+  lcd.print("  ");
+  if (second(t) < 10)
+  {
+    lcd.print(String(hour(t)) + String(":") + String(minute(t)) + String(":0") + String(second(t)));
+  }
+  else
+  {
+    lcd.print(String(hour(t)) + String(":") + String(minute(t)) + String(":") + String(second(t)));
+  }
+  // End Show time in lcd
+}
+
+
