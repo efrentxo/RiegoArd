@@ -43,8 +43,8 @@ void setup()
   //Iniciamos la pantalla
   lcd.init();
 
-  // Update date & time with compiling info
-  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  // Update date & time with compiling info, only needed the first time RTC is used
+  // rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   
   time = 0;
 
@@ -54,7 +54,7 @@ void loop()
 {
   // LCD time & data
   displayTime();
-  
+
   // Main state machine
   switch (currentState) {
     case 0:
@@ -64,7 +64,7 @@ void loop()
 
       lcd.setCursor(0, 1); //Saltamos a la segunda
       lcd.print("--> esperando");//Escribimos en la primera linea
-
+      
       digitalWrite (ledPin, LOW); // cierro el led
       myservo.write(0);
 
@@ -131,18 +131,36 @@ void displayTime()
 {
   // Prepare LCD
   lcd.clear();//Limpiamos la LCD
+
+  // RTC
+  DateTime now = rtc.now();
+  
   //Show time in lcd
-  time_t t = now();
   lcd.setCursor(0, 0); //Saltamos a la tercera
-  lcd.print(String(day(t)) + String("/") + String(month(t)) + String("/") + String(year(t)));
-  lcd.print("  ");
-  if (second(t) < 10)
+  lcd.print(String(now.day()) + String("/") + String(now.month()) + String("/") + String(now.year()));
+  if (now.month() < 10)
   {
-    lcd.print(String(hour(t)) + String(":") + String(minute(t)) + String(":0") + String(second(t)));
+    lcd.print("   ");
   }
   else
   {
-    lcd.print(String(hour(t)) + String(":") + String(minute(t)) + String(":") + String(second(t)));
+    lcd.print("  ");
+  }
+  if ((now.second() < 10) && (now.minute() < 10))
+  {
+    lcd.print(String(now.hour()) + String(":0") + String(now.minute()) + String(":0") + String(now.second()));
+  }
+  else if (now.minute() < 10)
+  {
+    lcd.print(String(now.hour()) + String(":0") + String(now.minute()) + String(":") + String(now.second()));
+  }
+  else if (now.second() < 10)
+  {
+    lcd.print(String(now.hour()) + String(":") + String(now.minute()) + String(":0") + String(now.second()));
+  }
+  else
+  {
+    lcd.print(String(now.hour()) + String(":") + String(now.minute()) + String(":") + String(now.second()));
   }
   // End Show time in lcd
 }
