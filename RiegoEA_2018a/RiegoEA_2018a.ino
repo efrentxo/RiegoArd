@@ -19,6 +19,7 @@ const int hora = 0;
 byte horaInicio = 13, minutoInicio = 11;
 byte horaFin = 13, minutoFin = 12;
 unsigned long time;
+unsigned long timerday;
 
 //Pantalla 20x4
 //Librerias necesarias
@@ -47,6 +48,7 @@ void setup()
   // rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   
   time = 0;
+  timerday = 0;
 
 }
 
@@ -62,8 +64,6 @@ void loop()
       lcd.setCursor(0, 3); //Saltamos a la segunda linea
       lcd.print("TEST state --> 0");//Escribimos en la primera linea
 
-      lcd.setCursor(0, 1); //Saltamos a la segunda
-      lcd.print("--> esperando");//Escribimos en la primera linea
       
       digitalWrite (ledPin, LOW); // cierro el led
       myservo.write(0);
@@ -78,7 +78,7 @@ void loop()
       //do something when state equals "RiegoProg"
       lcd.setCursor(0, 3); //Saltamos a la segunda linea
       lcd.print("TEST state --> 1");//Escribimos en la primera linea
-      lcd.setCursor(0, 1); //Saltamos a la segunda
+      lcd.setCursor(0, 2); //Saltamos a la segunda
       lcd.print("--> REGANDO!!");//Escribimos en la primera linea
 
       digitalWrite (ledPin, HIGH); // activo el led
@@ -135,9 +135,23 @@ void displayTime()
   // RTC
   DateTime now = rtc.now();
   
-  //Show time in lcd
-  lcd.setCursor(0, 0); //Init cursor position
-  lcd.print(String(now.day()) + String("/") + String(now.month()) + String("/") + String(now.year()));
+  if (timerday < 5)
+  {
+      //Show date in lcd
+      lcd.setCursor(0, 0); //Init cursor position
+      lcd.print(String(now.day()) + String("/") + String(now.month()) + String("/") + String(now.year()));
+  }
+  else
+  {
+     // Show day of the week
+     lcd.setCursor(0,0);
+     lcd.print(daysOfTheWeek[now.dayOfTheWeek()]); 
+     if (timerday > 10)
+     {
+        timerday = 0;
+     }
+  }
+  timerday = timerday + 1;
   
   if (now.hour() < 10)
   {
@@ -164,6 +178,7 @@ void displayTime()
   {
     lcd.print(String(now.hour()) + String(":") + String(now.minute()) + String(":") + String(now.second()));
   }
+
   // End Show time in lcd
 }
 
