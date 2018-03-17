@@ -36,7 +36,7 @@ void setup()
   Serial.begin(9600);
   //Pongo el reloj en la hora actual (en mi caso las 13:10:00 del 21/11/2013)
   //con setTime(hours, minutes, seconds, days, months, years);
-  setTime(13, 10, 00, 21, 11, 2018);
+  //setTime(13, 10, 00, 21, 11, 2018);
 
   //Iniciamos el fondo retroiluminado
   lcd.backlight();
@@ -138,9 +138,13 @@ void displayTime()
   //Show time in lcd
   lcd.setCursor(0, 0); //Saltamos a la tercera
   lcd.print(String(now.day()) + String("/") + String(now.month()) + String("/") + String(now.year()));
-  if (now.month() < 10)
+  if (((now.month() < 10) && (now.hour() > 10)) || ((now.month() > 10) && (now.hour() < 10)))
   {
     lcd.print("   ");
+  }
+  else if ((now.month() < 10) && (now.hour() < 10)) 
+  {
+    lcd.print("    ");
   }
   else
   {
