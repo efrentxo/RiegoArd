@@ -136,20 +136,18 @@ void displayTime()
   DateTime now = rtc.now();
   
   //Show time in lcd
-  lcd.setCursor(0, 0); //Saltamos a la tercera
+  lcd.setCursor(0, 0); //Init cursor position
   lcd.print(String(now.day()) + String("/") + String(now.month()) + String("/") + String(now.year()));
-  if (((now.month() < 10) && (now.hour() > 10)) || ((now.month() > 10) && (now.hour() < 10)))
+  
+  if (now.hour() < 10)
   {
-    lcd.print("   ");
-  }
-  else if ((now.month() < 10) && (now.hour() < 10)) 
-  {
-    lcd.print("    ");
+    lcd.setCursor(13,0);
   }
   else
   {
-    lcd.print("  ");
+    lcd.setCursor(12,0);
   }
+  
   if ((now.second() < 10) && (now.minute() < 10))
   {
     lcd.print(String(now.hour()) + String(":0") + String(now.minute()) + String(":0") + String(now.second()));
