@@ -15,17 +15,25 @@ const int ledPin = 12; // pin for the led indicator
 // Parameters:
 const int  TimeWatering = 300; // [sec]
 const int hora = 0;
-//Defino horas de riego Inicio a las 00:01 y termina a las 00:02 (poned las horas a las que hagais las pruebas)
-byte horaInicio = 13, minutoInicio = 11;
-byte horaFin = 13, minutoFin = 12;
 unsigned long time;
 unsigned long timerday;
 
-//Pantalla 20x4
+// Define initial hour and minute for watering
+// Program 1
+int Program1 = 1;       // 1:enable, 0:disable
+byte HourInit1 = 22;    // Initial hour to start watering  
+byte MinuteInit1 = 10;  // Initial minutes to start watering
+byte dayofweek1 = 7;    // Day of the week to water
+
+// Program 2
+byte HourInit2 = 22;
+byte MinuteInit2 = 04;
+byte dayofweek2 = 7;
+
 //Librerias necesarias
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
-LiquidCrystal_I2C lcd(0x27, 20, 4);
+LiquidCrystal_I2C lcd(0x27, 20, 4); //Pantalla 20x4
 
 // State machine
 int currentState = 0;
@@ -87,7 +95,7 @@ void loop()
       time = time + 1;
       
       // Transition
-      if (time > 10) { //comprobamos si es la hora del riego
+      if (time > 60) { //comprobamos si es la hora del riego
         currentState = 0;
         time = 0;
       }
@@ -109,20 +117,17 @@ void loop()
 }
 
 boolean esHoraRiego() {
-  //Para hacer las comparaciones de cuando empezar y cuando terminar,   lo paso todo a minutos.
-  //Por eso momentoInicio = 13*60 + 11 = 791 y de fin = 13*60 + 12 =  792
-  //También se podría hacer una doble comparación de horaActual con horaInicio y horaFin
-  //y de minutoActual con minutoInicio y minutoFin
-
-  int momentoInicio = (horaInicio * 60) + minutoInicio;
-  int momentoFin = (horaFin * 60) + minutoFin;
-  int momentoAhora = (hour() * 60) + minute();
-
-  //Esto es que si hemos pasado o estamos en el momento de inicio , pero antes del momento del fin...
-  if ((momentoInicio <= momentoAhora) && (momentoAhora < momentoFin)) {
+  DateTime now = rtc.now();
+  
+  // Check if the time is equal to program watering
+  // Minimum 60sec, less thatn 60sec it is not possible
+  // Check program 1:
+  if (Program1 == 1 && HourInit1 == now.hour() && MinuteInit1 == now.minute())
+  {
     return true; // estamos en período de riego: devolver “true”
   }
-  else {
+  else
+  {
     return false; // no estamos en período de riego: devolver “false”
   }
 }
