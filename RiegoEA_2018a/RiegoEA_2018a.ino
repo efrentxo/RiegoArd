@@ -147,7 +147,7 @@ boolean esHoraRiego() {
 void displayTime()
 {
   // Prepare LCD
-  lcd.clear();//Limpiamos la LCD
+  // lcd.clear();//Limpiamos la LCD
 
   // RTC
   DateTime now = rtc.now();
@@ -162,7 +162,7 @@ void displayTime()
   {
      // Show day of the week
      lcd.setCursor(0,0);
-     lcd.print(daysOfTheWeek[now.dayOfTheWeek()]); 
+     lcd.print(daysOfTheWeek[now.dayOfTheWeek()] + String("  ")); 
      if (timerday > 10)
      {
         timerday = 0;
