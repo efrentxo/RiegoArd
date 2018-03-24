@@ -207,9 +207,13 @@ void displayTime()
 
 void displayTemp()
 {
-  sensores.requestTemperatures(); //Enviamos el comando para obtener la temperatura 
-  float val =  sensores.getTempCByIndex(0); // Almacenamos la temperatura en la variable val
+  // Send the comand to obtain the temperature
+  sensores.requestTemperatures(); 
+  // Save temperature value in the "val" variable
+  float val =  sensores.getTempCByIndex(0);
+  // Set lcd cursor in line 2
   lcd.setCursor(0,1); 
+  // Write in lcd temperature value and ºC simbol
   lcd.print(String(val) + String(char(223))+ String("C"));
 }
 
