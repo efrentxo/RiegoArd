@@ -39,6 +39,16 @@ LiquidCrystal_I2C lcd(0x27, 20, 4); //Pantalla 20x4
 // State machine
 int currentState = 0;
 
+// Sensor Temperatura DS18B20
+#include <DallasTemperature.h>
+#include <OneWire.h>
+  // DQ esta conectado al pin 8 de arduino //
+#define ONE_WIRE_BUS 2
+  // Configuramos el pin asignado al sensor 1-Wire a DallasTemperature//
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensores(&oneWire);
+float val=0;        // variable donde guardaremos la temperatura leida del sensor
+
 void setup()
 {
   pinMode(ledPin, OUTPUT);   // led indicator
@@ -65,7 +75,8 @@ void loop()
 {
   // LCD time & data
   displayTime();
-
+  displayTemp();
+  
   // Main state machine
   switch (currentState) {
     case 0:
@@ -194,4 +205,11 @@ void displayTime()
   // End Show time in lcd
 }
 
+void displayTemp()
+{
+  sensores.requestTemperatures(); //Enviamos el comando para obtener la temperatura 
+  float val =  sensores.getTempCByIndex(0); // Almacenamos la temperatura en la variable val
+  lcd.setCursor(0,1); 
+  lcd.print(String(val) + String(char(223))+ String("C"));
+}
 
