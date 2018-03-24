@@ -25,8 +25,9 @@ byte HourInit1 = 22;    // Initial hour to start watering
 byte MinuteInit1 = 10;  // Initial minutes to start watering
 byte dayofweek1 = 7;    // Day of the week to water
 
-// Program 2
-byte HourInit2 = 22;
+// Program 2  
+int Program2 = 1;       // 1:enable, 0:disable
+byte HourInit2 = 22;  
 byte MinuteInit2 = 04;
 byte dayofweek2 = 7;
 
@@ -184,6 +185,12 @@ void displayTime()
     lcd.print(String(now.hour()) + String(":") + String(now.minute()) + String(":") + String(now.second()));
   }
 
+  // Show watering program 1
+  if (Program1 == 1)
+  {
+     lcd.setCursor(0,2); 
+     lcd.print(String("WATERING AT ") + String(HourInit1) + String(":") + String(MinuteInit1) + String(":") + String("00"));
+  }
   // End Show time in lcd
 }
 
